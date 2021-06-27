@@ -1,4 +1,7 @@
 import sqlite3
+from hashlib import sha256
+from shared_data import letters
+from random import choice
 
 con, cur = None, None
 
@@ -53,8 +56,36 @@ def db_init():
     con.commit()
 
 
+def check_username_exists(username):
+    cur.execute('SELECT user_id FROM user WHERE username=?', (username,))
+    if cur.fetchone():
+        # there exists a user with specified username
+        return True
+    return False
 
 
+def insert_user(user_name, password):
+    # adds a new user
+    salt = ''.join([choice(letters) for _ in range(6)])
+    cur.execute('insert into user(username, password) values(?, ?)', 
+                (user_name, salt + sha256((salt + password).encode()).hexdigest()))
+    con.commit()
+
+
+def validate_user(username, password):
+    if not check_username_exists(username):
+        # user name doesn't exist
+        return False
+    cur.execute('SELECT password FROM user WHERE username=?', (username,))
+    hashed_salted_pass = cur.fetchone()[0]
+    salt = hashed_salted_pass[:6]
+    if sha256((salt + password).encode()).hexdigest() == hashed_salted_pass[6:]:
+        # right password
+        return True
+    else:
+        return False
+
+    
 
 
 
