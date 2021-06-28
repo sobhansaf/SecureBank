@@ -1,7 +1,7 @@
 import sqlite3
 from hashlib import sha256
-from shared_data import letters
 from random import choice
+from shared_functions import generate_random_string
 
 con, cur = None, None
 
@@ -66,27 +66,25 @@ def check_username_exists(username):
 
 def insert_user(user_name, password):
     # adds a new user
-    salt = ''.join([choice(letters) for _ in range(6)])
+    salt = generate_random_string(6)
     cur.execute('insert into user(username, password) values(?, ?)', 
                 (user_name, salt + sha256((salt + password).encode()).hexdigest()))
     con.commit()
 
 
 def validate_user(username, password):
-    if not check_username_exists(username):
-        # user name doesn't exist
+    cur.execute('SELECT password, user_id FROM user WHERE username=?', (username,))
+    user_data = cur.fetchone()
+    if not user_data:
+        # no user with supplied username
         return False
-    cur.execute('SELECT password FROM user WHERE username=?', (username,))
-    hashed_salted_pass = cur.fetchone()[0]
+    hashed_salted_pass = user_data[0]
     salt = hashed_salted_pass[:6]
     if sha256((salt + password).encode()).hexdigest() == hashed_salted_pass[6:]:
         # right password
-        return True
+        return user_data[1]  # returns user_id
     else:
         return False
-
-    
-
 
 
 
