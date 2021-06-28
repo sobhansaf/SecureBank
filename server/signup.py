@@ -4,18 +4,6 @@ import sqlite3
 from random import choice
 from shared_data import letters
 
-# error codes when signing up
-sign_up_errors = {
-    1: 'Username exists',
-    2: 'Long username',
-    3: 'Dictionary password',
-    4: 'No lower case',
-    5: 'No upper case',
-    6: 'No special character',
-    7: 'No digits',
-    8: 'Less than 8 character',
-    9: 'Same 3 or more consecutive characters'
-}
 
 def check_password_strength(password):
     result = list()   # a list of weaknesses of password. thie variable will be returned
