@@ -7,6 +7,8 @@ letters += '~!@#$%^&*()_+=-{[}]|\\/:;"\'<>,.?'
 
 # error codes
 errors = {
+    0: 'Successful',
+    # sign up--------
     1: 'Username exists',
     2: 'Long username',
     3: 'Dictionary password',
@@ -15,5 +17,8 @@ errors = {
     6: 'No special character',
     7: 'No digits',
     8: 'Less than 8 character',
-    9: 'Same 3 or more consecutive characters'
+    9: 'Same 3 or more consecutive characters',
+    # -------------------
+    # login -------------
+    10: 'Wrong credentials'
 }

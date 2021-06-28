@@ -62,5 +62,5 @@ def sign_up(username, password):
 
     insert_user(username, password)
 
-    return True
+    return [0]
 
