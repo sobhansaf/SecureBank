@@ -1,7 +1,7 @@
 import sqlite3
 from hashlib import sha256
 from random import choice
-from shared_functions import generate_random_string
+import shared_functions
 from datetime import datetime
 
 con, cur = None, None
@@ -79,7 +79,7 @@ def check_username_exists(username):
 
 def insert_user(user_name, password):
     # adds a new user
-    salt = generate_random_string(6)
+    salt = shared_functions.generate_random_string(6)
     cur.execute('insert into user(username, password) values(?, ?)', 
                 (user_name, salt + sha256((salt + password).encode()).hexdigest()))
     con.commit()
@@ -109,7 +109,7 @@ def get_user_id_with_auth(auth_code):
 def add_auth_code(user_id, auth_code=None):
     # gets a user_id and an auth_code. adds it into auth_codes table
     if auth_code is None:
-        auth_code = sha256(generate_random_string(20).encode()).hexdigest()
+        auth_code = sha256(shared_functions.generate_random_string(20).encode()).hexdigest()
     now = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     cur.execute('INSERT INTO auth_codes(auth_code, user_id, creation_date_time) VALUES (?, ?, ?)', (auth_code, user_id, now))
     con.commit()
