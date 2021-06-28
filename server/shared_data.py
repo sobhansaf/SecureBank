@@ -20,5 +20,6 @@ errors = {
     9: 'Same 3 or more consecutive characters',
     # -------------------
     # login -------------
-    10: 'Wrong credentials'
+    10: 'Wrong credentials',
+    11: 'User not loged in'
 }
