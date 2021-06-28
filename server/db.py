@@ -134,5 +134,13 @@ def add_user_account(user_id, account_id, pending):
     cur.execute('INSERT INTO account_users(user_id, account_id, pending) VALUES (?, ?, ?)', (user_id, account_id, pending))
     con.commit()
 
+def check_account_exists(account_id):
+    cur.execute('SELECT account_id FROM account WHERE account_id=?', (account_id, ))
+    return cur.fetchone()
+
+def check_userid_exists_in_accounts(user_id, account_id):
+    cur.execute('SELECT user_id FROM account_users WHERE user_id = ? AND account_id = ?', (user_id, account_id))
+    return cur.fetchone()
+
 
 

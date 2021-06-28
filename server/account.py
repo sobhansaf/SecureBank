@@ -1,4 +1,5 @@
-from db import add_account, add_user_account
+from db import add_account, add_user_account, check_account_exists
+from db import check_userid_exists_in_accounts
 from shared_functions import check_auth_code
 from datetime import datetime
 
@@ -17,11 +18,20 @@ def create_account(account_type, amount, conf_label, int_label, auth_code):
 
 
 def join(account_id, auth_code):
-    pass
+    # joins user_id related to auth_code in account with id account_id
+
+    user_id = check_auth_code(auth_code)
+    if user_id is None:
+        return [11]
+    
+    if not check_account_exists(account_id):
+        return [12]
+
+    if check_userid_exists_in_accounts(user_id, account_id):
+        return [12]
+    
+    add_user_account(user_id, account_id, 1)  # pending status is 1
+    return [0]
 
     
-
-
-
-
 

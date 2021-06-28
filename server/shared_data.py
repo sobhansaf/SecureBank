@@ -21,5 +21,8 @@ errors = {
     # -------------------
     # login -------------
     10: 'Wrong credentials',
-    11: 'User not loged in'
+    11: 'User not loged in',
+    # -------------------
+    # accouont-----------
+    12: 'Could not join'
 }
