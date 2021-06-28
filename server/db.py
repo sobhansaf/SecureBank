@@ -2,6 +2,7 @@ import sqlite3
 from hashlib import sha256
 from random import choice
 from shared_functions import generate_random_string
+from datetime import datetime
 
 con, cur = None, None
 
@@ -53,6 +54,18 @@ def db_init():
         );
     ''')
 
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS auth_codes (
+            auth_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            auth_code CHAR(64) NOT NULL,
+            user_id INTEGER NOT NULL,       
+            creation_date_time VARCHAR(30),
+            FOREIGN KEY (user_id) REFERENCES user(user_id)
+                ON DELETE CASCADE
+                ON UPDATE CASCADE
+        );
+    ''')
+
     con.commit()
 
 
@@ -86,5 +99,25 @@ def validate_user(username, password):
     else:
         return False
 
+
+def get_user_id_with_auth(auth_code):
+    # gets an auth code. returns its matched user_id and creation date of the auth code
+    cur.execute('SELECT user_id, creation_date_time FROM auth_codes WHERE auth_code=?', (auth_code,))
+    return cur.fetchone()
+
+
+def add_auth_code(user_id, auth_code=None):
+    # gets a user_id and an auth_code. adds it into auth_codes table
+    if auth_code is None:
+        auth_code = sha256(generate_random_string(20).encode()).hexdigest()
+    now = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
+    cur.execute('INSERT INTO auth_codes(auth_code, user_id, creation_date_time) VALUES (?, ?, ?)', (auth_code, user_id, now))
+    con.commit()
+    return auth_code
+
+
+def delete_auth_code(auth_code):
+    cur.execute('DELETE FROM auth_codes WHERE auth_code=?', (auth_code, ))
+    con.commit()
 
 
