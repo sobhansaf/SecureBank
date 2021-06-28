@@ -121,3 +121,18 @@ def delete_auth_code(auth_code):
     con.commit()
 
 
+def add_account(account_type, amount, conf_label, int_label):
+    # adds a new account in database
+    cur.execute('INSERT INTO account(account_type, amount, conf_label, int_label) VALUES (?, ?, ?, ?)',
+                (account_type, amount, conf_label, int_label))
+    con.commit()
+    return cur.lastrowid
+
+
+def add_user_account(user_id, account_id, pending):
+    # adds a new account_user record
+    cur.execute('INSERT INTO account_users(user_id, account_id, pending) VALUES (?, ?, ?)', (user_id, account_id, pending))
+    con.commit()
+
+
+
