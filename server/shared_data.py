@@ -24,5 +24,6 @@ errors = {
     11: 'User not loged in',
     # -------------------
     # accouont-----------
-    12: 'Could not join'
+    12: 'Could not join',
+    13: 'No permission to list join requests'
 }

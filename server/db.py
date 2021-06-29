@@ -145,5 +145,16 @@ def check_userid_exists_in_accounts(user_id, account_id):
     cur.execute('SELECT user_id FROM account_users WHERE user_id = ? AND account_id = ?', (user_id, account_id))
     return cur.fetchone()
 
+def is_owner(user_id, account_id):
+    # checks whether user_id is an acitve owner of account_id or not
+    cur.execute('SELECT user_id FROM account_users WHERE user_id = ? AND account_id = ? AND pending=0',
+                (user_id, account_id))
+    return cur.fetchone()
 
-
+def get_join_requests(account_id):
+    cur.execute('''
+        SELECT username FROM
+            account_users JOIN user ON user.user_id = account_users.user_id
+            WHERE account_id = ? AND pending=1    
+    ''', (account_id, ))
+    return cur.fetchall()
