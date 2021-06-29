@@ -24,16 +24,16 @@ def db_init():
     cur.execute('''
         CREATE TABLE IF NOT EXISTS account (
             account_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            account_type INTEGER NOT NULL,
+            account_type INTEGER NOT NULL CHECK (account_type > 0 AND account_type < 5),
             amount INTEGER NOT NULL,
-            conf_label INTEGER NOT NULL,
-            int_label INTEGER NOT NULL
+            conf_label INTEGER NOT NULL CHECK (conf_label > 0 AND conf_label < 5),
+            int_label INTEGER NOT NULL CHECK (int_label > 0 AND int_label < 5)
         );
     ''')
 
     # account_id should be a 10 digit number
     cur.execute('''
-        INSERT INTO account(account_id, account_type, amount, conf_label, int_label) VALUES (999999999, 0, 0, 0, 0);
+        INSERT INTO account(account_id, account_type, amount, conf_label, int_label) VALUES (999999999, 1, 1, 1, 1);
     ''')
 
     cur.execute('''
@@ -45,6 +45,8 @@ def db_init():
             user_id INTEGER,
             account_id INTEGER,
             pending INTEGER,
+            user_conf_label INTEGER CHECK (user_conf_label >= 0 AND user_conf_label < 5), -- TS:1   U:4  0: pending
+            user_int_label INTEGER CHECK (user_int_label >= 0 AND user_int_label < 5),  -- VT:1   U:4     0: pending
             FOREIGN KEY (user_id) REFERENCES user (user_id)
                 ON DELETE CASCADE
                 ON UPDATE CASCADE,
@@ -129,9 +131,10 @@ def add_account(account_type, amount, conf_label, int_label):
     return cur.lastrowid
 
 
-def add_user_account(user_id, account_id, pending):
+def add_user_account(user_id, account_id, pending, user_conf_label=1, user_int_label=1):
     # adds a new account_user record
-    cur.execute('INSERT INTO account_users(user_id, account_id, pending) VALUES (?, ?, ?)', (user_id, account_id, pending))
+    cur.execute('INSERT INTO account_users(user_id, account_id, pending, user_conf_label, user_int_label) VALUES (?, ?, ?, ?, ?)',
+                (user_id, account_id, pending, user_conf_label, user_int_label))
     con.commit()
 
 def check_account_exists(account_id):

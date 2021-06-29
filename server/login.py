@@ -7,7 +7,7 @@ def login(username, password):
     user_id = validate_user(username, password)
     if not user_id:
         # credentials don't exist or are wrong
-        return 10
+        return [10]
     
     auth_code = sha256(generate_random_string(20).encode()).hexdigest()
     add_auth_code(user_id, auth_code)

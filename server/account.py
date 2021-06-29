@@ -30,8 +30,11 @@ def join(account_id, auth_code):
     if check_userid_exists_in_accounts(user_id, account_id):
         return [12]
     
-    add_user_account(user_id, account_id, 1)  # pending status is 1
+    add_user_account(user_id, account_id, 1, 0, 0)  # pending status is 1
     return [0]
 
+
+def list_join_requests():
+    pass
     
 
