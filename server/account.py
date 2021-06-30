@@ -1,6 +1,7 @@
 from db import add_account, add_user_account, check_account_exists
 from db import check_userid_exists_in_accounts, is_owner
 from db import get_join_requests, has_user_requested, remove_pending_status
+from db import get_all_accounts, db_init
 from shared_functions import check_auth_code
 from datetime import datetime
 
@@ -76,3 +77,24 @@ def accept_join_request(user_name, account_id, conf_label, int_label, auth_code)
     
     remove_pending_status(user_id, int(conf_label), int(int_label))
     return [0]
+
+def show_my_account(auth_code):
+    # returns all account information for user with given auth_code
+
+    user_id = check_auth_code(auth_code)   
+    if user_id is None:
+        return [11]
+
+    accounts = get_all_accounts(user_id)
+    if accounts is None:
+        # user has no account
+        return [0]
+
+    accounts.insert(0, 0)
+    return accounts
+
+if __name__ == '__main__':
+    db_init()
+    print(show_my_account(1))
+    print('%%'* 10)
+    print(show_my_account(6))

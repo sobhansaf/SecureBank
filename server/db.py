@@ -172,4 +172,8 @@ def remove_pending_status(user_id, conf_label, int_label):
     cur.execute('UPDATE account_users SET pending=0, user_conf_label=?, user_int_label=? WHERE user_id=?',
                 (conf_label, int_label, user_id))
     con.commit()
+
+def get_all_accounts(user_id):
+    cur.execute('SELECT account_id FROM account_users WHERE user_id = ? AND pending=0', (user_id, ))
+    return cur.fetchall()
     
