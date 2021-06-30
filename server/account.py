@@ -1,6 +1,6 @@
 from db import add_account, add_user_account, check_account_exists
 from db import check_userid_exists_in_accounts, is_owner
-from db import get_join_requests
+from db import get_join_requests, has_user_requested, remove_pending_status
 from shared_functions import check_auth_code
 from datetime import datetime
 
@@ -56,7 +56,23 @@ def list_join_requests(account_id, auth_code):
     res.extend(requests)
     return res
 
-    
-    
+def accept_join_request(user_name, account_id, conf_label, int_label, auth_code):
+    # adds a new user to the owners of the account
 
+    user_id = check_auth_code(auth_code)   # this is the user_id of the user who wants to accept the join request
+    if user_id is None:
+        return [11]
 
+    if not is_owner(user_id, account_id):
+        # user is not the owner of the account.
+        return [13]
+
+    user_id = has_user_requested(user_name, account_id)  # this is the user_id of the user who requested to join
+    if not user_id:
+        # user has not requested for joining
+        return [14]
+
+    user_id = user_id[0]
+    
+    remove_pending_status(user_id, int(conf_label), int(int_label))
+    return [0]
