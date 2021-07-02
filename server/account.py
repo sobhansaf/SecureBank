@@ -140,4 +140,20 @@ def transfer(from_acc_id, to_acc_id, amount, auth_code):
     add_transfer(from_acc_id, to_acc_id, amount)
     return [0]
 
+def deposit(to_account_id, amount, auth_code):
+    # deposits amount unit of money to to_account_id
+    user_id = check_auth_code(auth_code)   
+    if user_id is None:
+        return [11]
 
+    if not check_account_exists(to_account_id):
+        # to_account_id doesn't exist
+        return [17]
+
+    if amount < 1:
+        return [15]
+
+    change_amount(to_account_id, amount)
+    return [0]
+
+    
