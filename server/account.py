@@ -75,7 +75,7 @@ def accept_join_request(user_name, account_id, conf_label, int_label, auth_code)
 
     user_id = user_id[0]
     
-    remove_pending_status(user_id, int(conf_label), int(int_label))
+    remove_pending_status(user_id, account_id, int(conf_label), int(int_label))
     return [0]
 
 def show_my_account(auth_code):

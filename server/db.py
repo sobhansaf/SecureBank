@@ -168,9 +168,9 @@ def has_user_requested(username, account_id):
     ''', (username, account_id))
     return cur.fetchone()
 
-def remove_pending_status(user_id, conf_label, int_label):
-    cur.execute('UPDATE account_users SET pending=0, user_conf_label=?, user_int_label=? WHERE user_id=?',
-                (conf_label, int_label, user_id))
+def remove_pending_status(user_id, account_id,  conf_label, int_label):
+    cur.execute('UPDATE account_users SET pending=0, user_conf_label=?, user_int_label=? WHERE user_id=? AND account_id=?',
+                (conf_label, int_label, user_id, account_id))
     con.commit()
 
 def get_all_accounts(user_id):
