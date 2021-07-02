@@ -69,6 +69,10 @@ def accept_join_request(user_name, account_id, conf_label, int_label, auth_code)
         # user is not the owner of the account.
         return [13]
 
+    user_labels = get_user_labels_in_account(user_id, account_id)  # returns a tuple with two items.
+    if conf_label > user_labels[0] or int_label > user_labels[1]:  # first item is conf label and second is int label
+        return [19]
+
     user_id = has_user_requested(user_name, account_id)  # this is the user_id of the user who requested to join
     if not user_id:
         # user has not requested for joining

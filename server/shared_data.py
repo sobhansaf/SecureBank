@@ -30,5 +30,6 @@ errors = {
     15: 'Invalid amount',
     16: 'From_account_id is wrong',   # in deposit
     17: 'To_account_id is wrong',
-    18: 'Not enough amount'
+    18: 'Not enough amount',
+    19: 'Can\'t accept users with higher permissions than yourself'
 }
