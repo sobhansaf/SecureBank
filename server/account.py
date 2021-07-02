@@ -116,27 +116,23 @@ def transfer(from_acc_id, to_acc_id, amount, auth_code):
         # user is not authorized to deposit.
         return [13]
 
-    errors = list()
     if amount < 1:
-        errors.append(15)
+        return [15]
     
     current_amount = get_account_amount(from_acc_id)  # returns current amount of account of depositor
     if current_amount is None:
         # from_acc_id doesn't exist
-        errors.append(16)
+        return [16]
 
     if not check_account_exists(to_acc_id):
         # to_acc_id doesn't exist
-        errors.append(17)
+        return [17]
     
     current_amount = current_amount[0]   # current amount is returning value of fetchone() which is a tuple
 
     if current_amount < amount:
         # not enough amount in from_acc_id
-        errors.append(18)
-
-    if errors:
-        return errors
+        return [18]
 
     change_amount(from_acc_id, -amount)
     change_amount(to_acc_id, amount)
@@ -163,4 +159,32 @@ def deposit(to_account_id, amount, auth_code):
     
     return [0]
 
+def withdraw(from_account_id, amount, auth_code):
+    user_id = check_auth_code(auth_code)   # this is the user_id of the user who wants to accept the join request
+    if user_id is None:
+        return [11]
     
+    if not is_owner(user_id, from_account_id):
+        # user is not the owner of the account.
+        return [13]
+
+    user_labels = get_user_labels_in_account(user_id, from_account_id)  # returns a tuple with two items. first item is conf label and second is int label]
+    account_labels = get_account_labels(from_account_id)
+
+    account_amount = get_account_amount(from_account_id)
+    if account_amount is None:
+        return [16]
+
+    if user_labels[1] < account_labels[1]:   # user int level is less than account int level
+        return [20]
+    
+    if amount < 1:
+        return [15]
+
+    if account_amount[0] < amount:
+        return [18]
+
+    change_amount(from_account_id, -amount)
+    add_transaction(from_account_id, -amount)
+
+    return [0]
