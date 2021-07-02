@@ -25,6 +25,10 @@ errors = {
     # -------------------
     # accouont-----------
     12: 'Could not join',
-    13: 'No permission to list or change join requests',
-    14: 'User has not requested to join'
+    13: 'No permission',
+    14: 'User has not requested to join',
+    15: 'Invalid amount',
+    16: 'From_account_id is wrong',   # in deposit
+    17: 'To_account_id is wrong',
+    18: 'Not enough amount'
 }
