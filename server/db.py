@@ -205,4 +205,8 @@ def change_amount(acc_id, amount):
     cur.execute('UPDATE account SET amount = amount + ? WHERE account_id = ?', (amount, acc_id))
     con.commit()
 
-
+def get_latest_transactions(account_id):
+    cur.execute('SELECT amount, date FROM transactions WHERE account_id = ? ORDER BY transaction_id DESC LIMIT 5;',
+                (account_id, ))
+    return cur.fetchall()
+    

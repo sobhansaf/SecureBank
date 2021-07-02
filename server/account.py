@@ -188,3 +188,29 @@ def withdraw(from_account_id, amount, auth_code):
     add_transaction(from_account_id, -amount)
 
     return [0]
+
+def show_account(account_id, auth_code):
+    user_id = check_auth_code(auth_code)   # this is the user_id of the user who wants to accept the join request
+    if user_id is None:
+        return [11]
+
+    if not is_owner(user_id, account_id):
+        # user is not the owner of the account.
+        return [13]
+
+    user_labels = get_user_labels_in_account(user_id, account_id)
+    account_labels = get_account_labels(account_id)
+
+    if user_labels[0] < account_labels[0]:   # if user has less conf level
+        return [21]
+
+    transactions = get_latest_transactions(account_id)
+    current_amount = get_account_amount(account_id)
+    if transactions is None:  # no transaction
+        return [0, current_amount[0]]
+
+    return [0, *transactions, current_amount[0]]
+
+
+
+

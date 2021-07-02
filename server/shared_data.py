@@ -32,5 +32,6 @@ errors = {
     17: 'To_account_id is wrong',
     18: 'Not enough amount',
     19: 'Can\'t accept users with higher permissions than yourself',
-    20: 'Low integrity labels for user'
+    20: 'Low integrity labels for user',
+    21: 'Low confidentiality labels for user'
 }
