@@ -69,16 +69,12 @@ def db_init():
     ''')
 
     cur.execute('''
-        CREATE TABLE IF NOT EXISTS transfer (
-            transfer_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            from_account_id INTEGER NOT NULL,
-            to_account_id INTEGER NOT NULL,
+        CREATE TABLE IF NOT EXISTS transactions (
+            transaction_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            account_id INTEGER NOT NULL,
             amount INTEGER NOT NULL,
             date VARCHAR(30),
-            FOREIGN KEY (from_account_id) REFERENCES account (account_id)
-                ON DELETE CASCADE
-                ON UPDATE CASCADE,
-            FOREIGN KEY (to_account_id) REFERENCES account (account_id)
+            FOREIGN KEY (account_id) REFERENCES account (account_id)
                 ON DELETE CASCADE
                 ON UPDATE CASCADE
         );
@@ -198,11 +194,11 @@ def get_account_amount(account_id):
     cur.execute('SELECT amount FROM account WHERE account_id = ?', (account_id, ))
     return cur.fetchone()
 
-def add_transfer(from_, to, amount):
+def add_transaction(account_id, amount):
     now = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     cur.execute('''
-        INSERT INTO transfer(from_account_id, to_account_id, amount, date) VALUES (?, ?, ?, ?);
-    ''', (from_, to, amount, now))
+        INSERT INTO transactions(account_id, amount, date) VALUES (?, ?, ?);
+    ''', (account_id, amount, now))
     con.commit()
 
 def change_amount(acc_id, amount):

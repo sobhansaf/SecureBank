@@ -137,7 +137,8 @@ def transfer(from_acc_id, to_acc_id, amount, auth_code):
     change_amount(from_acc_id, -amount)
     change_amount(to_acc_id, amount)
     
-    add_transfer(from_acc_id, to_acc_id, amount)
+    add_transaction(from_acc_id, -amount)
+    add_transaction(to_acc_id, amount)
     return [0]
 
 def deposit(to_account_id, amount, auth_code):
@@ -154,6 +155,8 @@ def deposit(to_account_id, amount, auth_code):
         return [15]
 
     change_amount(to_account_id, amount)
+    add_transaction(to_account_id, amount)
+    
     return [0]
 
     
