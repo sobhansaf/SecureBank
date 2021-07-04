@@ -3,6 +3,7 @@ import signup
 import login
 import account
 from db import db_init
+from logger import log
 
 import cryptography
 from cryptography.hazmat.backends import default_backend
@@ -55,10 +56,18 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.bind((host, port))
 sock.listen()
 con, addr = sock.accept()
+
+log(f'{addr} connected!')
+
 private_key = read_private_key()
+
+log('Private key is read successfully!')
 
 encrypted_session_key = con.recv(1024)
 session_key = decrypt_asymmetric(encrypted_session_key, private_key)
+
+log(f'Session key with {addr} is {session_key}')
+
 fernet = Fernet(session_key)
 
 while True:
@@ -67,14 +76,16 @@ while True:
         if not data:
             break
         data = fernet.decrypt(data).decode().strip()
+        log(f'{addr} sent {data}')
         data = data.split()
         res = server_commands[data[0]](*data[1:])
         res = list(map(str, res))
+        log(f'Response to {addr} is {" ".join(res)}')
         res = fernet.encrypt((' '.join(res)).encode())
         con.sendall(res)
     except KeyboardInterrupt:
         break
     except:
-        pass
+        log('Exception!')
 
 sock.close()
