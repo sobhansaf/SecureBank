@@ -45,6 +45,7 @@ host = 'localhost'
 port = 23654
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect((host, port))
+sock.settimeout(20)
 
 public_key = read_public_key()
 key = Fernet.generate_key()   # session key
@@ -69,7 +70,11 @@ while True:
         continue
     now = datetime.now().strftime(datetime_format)
     sock.send(fernet.encrypt((now + ' ' + command + ' ' + auth_code).encode()))
-    res = sock.recv(1024)
+    try:
+        res = sock.recv(1024)
+    except socket.timeout:
+        print('Servr can\'t answer right now')
+        break
     res = fernet.decrypt(res).decode()
     print(res)
     if command.startswith('Login'):
