@@ -70,8 +70,11 @@ def accept_join_request(user_name, account_id, conf_label, int_label, auth_code)
         return [13]
 
     user_labels = get_user_labels_in_account(user_id, account_id)  # returns a tuple with two items.
-    if conf_label > user_labels[0] or int_label > user_labels[1]:  # first item is conf label and second is int label
-        return [19]
+    try:
+        if int(conf_label) > user_labels[0] or int(int_label) > user_labels[1]:  # first item is conf label and second is int label
+            return [19]
+    except ValueError:
+        return [22]
 
     user_id = has_user_requested(user_name, account_id)  # this is the user_id of the user who requested to join
     if not user_id:
@@ -112,6 +115,11 @@ def transfer(from_acc_id, to_acc_id, amount, auth_code):
     account_labels = get_account_labels(from_acc_id)
     user_labels = get_user_labels_in_account(user_id, from_acc_id)
 
+    try:
+        amount = int(amount)
+    except ValueError:
+        return [22]
+
     if user_labels[1] < account_labels[1]:  # index one of labels are related to integrity label
         # user is not authorized to deposit.
         return [13]
@@ -150,6 +158,10 @@ def deposit(to_account_id, amount, auth_code):
     if not check_account_exists(to_account_id):
         # to_account_id doesn't exist
         return [17]
+    try:
+        amount = int(amount)
+    except ValueError:
+        return [22]
 
     if amount < 1:
         return [15]
@@ -167,6 +179,11 @@ def withdraw(from_account_id, amount, auth_code):
     if not is_owner(user_id, from_account_id):
         # user is not the owner of the account.
         return [13]
+
+    try:
+        amount = int(amount)
+    except ValueError:
+        return [22]
 
     user_labels = get_user_labels_in_account(user_id, from_account_id)  # returns a tuple with two items. first item is conf label and second is int label]
     account_labels = get_account_labels(from_account_id)

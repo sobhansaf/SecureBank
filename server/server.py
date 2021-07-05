@@ -25,7 +25,7 @@ server_commands = {
     'Accept': account.accept_join_request,
     'Show_MyAccount': account.show_my_account,
     'Transfer': account.transfer,
-    'Show_Account': account.show_my_account,
+    'Show_Account': account.show_account,
     'Deposit': account.deposit,
     'Withdraw': account.withdraw
 }
@@ -115,8 +115,4 @@ while True:
         con.sendall(res)
     except KeyboardInterrupt:
         break
-    except:
-        log('Exception!')
-        break
-
 sock.close()
