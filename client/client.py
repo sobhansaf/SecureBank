@@ -77,7 +77,7 @@ while True:
         break
     res = fernet.decrypt(res).decode()
     print(res)
-    if command.startswith('Login'):
+    if command.startswith('Login') and res.startswith('0 '):
         auth_code = res.split()[1]
 
 
