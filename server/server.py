@@ -69,6 +69,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.bind((host, port))
 sock.listen()
 con, addr = sock.accept()
+con.settimeout(20)
 
 log(f'{addr} connected!')
 
@@ -76,16 +77,28 @@ private_key = read_private_key()
 
 log('Private key is read successfully!')
 
-encrypted_session_key = con.recv(1024)
+try:
+    encrypted_session_key = con.recv(1024)
+except socket.timeout:
+    log('Client didn\'t send session key. connection will be closed!')
+    con.close()
+    exit(-1)
+
 session_key = decrypt_asymmetric(encrypted_session_key, private_key)
 
 log(f'Session key with {addr} is {session_key}')
 
 fernet = Fernet(session_key)
+con.settimeout(120)
 
 while True:
     try:
-        data = con.recv(1024)
+        try:
+            data = con.recv(1024)
+        except socket.timeout:
+            log('Client did\'t send any command. connection will be closed')
+            con.close()
+            exit(0)
         if not data:
             break
         data = fernet.decrypt(data).decode().strip()
@@ -104,5 +117,6 @@ while True:
         break
     except:
         log('Exception!')
+        break
 
 sock.close()
