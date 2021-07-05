@@ -13,6 +13,8 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import hashes
 
+from datetime import datetime
+
 
 server_commands = {
     'Signup': signup.sign_up,
@@ -27,6 +29,16 @@ server_commands = {
     'Deposit': account.deposit,
     'Withdraw': account.withdraw
 }
+
+def check_replay(time):
+    # time is a datetime object.
+    # this function checks if time is not for more than 3 minutes ago or later
+    now = datetime.now()
+    s = (now - time).seconds
+    s = (s ** 2) ** 0.5   # amount of seconds
+    if s > 180:
+        return True   # is replay
+    return False
 
 def read_private_key(private_key_address='private.pem'):
     with open(private_key_address, 'rb') as key:
@@ -49,6 +61,7 @@ def decrypt_asymmetric(encrypted, private_key):
 fernet = None
 port = 23654
 host = '127.0.0.1'
+datetime_format = '%d-%m-%Y %H:%M:%S'
 
 db_init()
 
@@ -78,7 +91,11 @@ while True:
         data = fernet.decrypt(data).decode().strip()
         log(f'{addr} sent {data}')
         data = data.split()
-        res = server_commands[data[0]](*data[1:])
+        time = datetime.strptime(data[0] + ' ' + data[1], datetime_format)
+        if check_replay(time):
+            log('It was a replayed packet!')
+            continue
+        res = server_commands[data[2]](*data[3:])
         res = list(map(str, res))
         log(f'Response to {addr} is {" ".join(res)}')
         res = fernet.encrypt((' '.join(res)).encode())
