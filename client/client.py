@@ -6,6 +6,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import hashes
+from datetime import datetime
 
 
 def read_public_key(public_key_address='public_shared.pem'):
@@ -55,6 +56,7 @@ sock.sendall(encrypted)
 fernet = Fernet(key)
 
 auth_code = ''
+datetime_format = '%d-%m-%Y %H:%M:%S'
 
 print('--- Welcome ---')
 print('Now you can Enter your commands. You can Enter "?" to see help')
@@ -65,7 +67,8 @@ while True:
     if command == '?':
         print_help()
         continue
-    sock.send(fernet.encrypt((command + ' ' + auth_code).encode()))
+    now = datetime.now().strftime(datetime_format)
+    sock.send(fernet.encrypt((now + ' ' + command + ' ' + auth_code).encode()))
     res = sock.recv(1024)
     res = fernet.decrypt(res).decode()
     print(res)
