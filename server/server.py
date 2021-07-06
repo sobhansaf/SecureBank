@@ -108,7 +108,13 @@ while True:
         if check_replay(time):
             log('It was a replayed packet!')
             continue
-        res = server_commands[data[2]](*data[3:])
+        try:
+            res = server_commands[data[2]](*data[3:])
+        except TypeError:
+            # wrong number of args
+            res = fernet.encrypt(b'Wrong number of args!')
+            con.sendall(res)
+            continue
         res = list(map(str, res))
         log(f'Response to {addr} is {" ".join(res)}')
         res = fernet.encrypt((' '.join(res)).encode())
