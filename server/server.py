@@ -116,8 +116,9 @@ while True:
             con.sendall(res)
             continue
         res = list(map(str, res))
-        log(f'Response to {addr} is {" ".join(res)}')
-        res = fernet.encrypt((' '.join(res)).encode())
+        now = datetime.now().strftime(datetime_format)
+        log(f'Response to {addr} is {now + " ".join(res)}')
+        res = fernet.encrypt((now + ' ' + ' '.join(res)).encode())
         con.sendall(res)
     except KeyboardInterrupt:
         break
