@@ -143,7 +143,17 @@ def intepret_response(command, response):
     else:
         print('Could not find command')
 
-
+def check_replay(response, threshold=180):
+    # checks if the response is a replayed response or not
+    time = ' '.join(response.split()[:2])  # first two parts of response is related to time
+    time = datetime.strptime(time, datetime_format)
+    now = datetime.now()
+    s = (now - time).seconds
+    s = s ** 2 ** 0.5   # absolute value of seconds
+    if s > threshold:
+        # is a replayed response
+        return True
+    return False
 
 host = 'localhost'
 port = 23654
@@ -190,6 +200,8 @@ while True:
     if command[0] == 'Login' or command[0] == 'Signup' or command[0] == 'Logout':
         auth_code = ''
         prompt = '>>> '         
+        if command[0] == 'Logout':
+            continue
 
     command = ' '.join(command)
 
@@ -201,6 +213,12 @@ while True:
         print('Servr can\'t answer right now')
         break
     res = fernet.decrypt(res).decode()
+
+    if check_replay(res):
+        print('A replay attack is detected. Be careful what are you doin!')
+        continue
+
+    res = ' '.join(res.split()[2:])  # removin timestamp
 
     intepret_response(command, res)
     if command.startswith('Login') and res.startswith('0 '):
